@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                @id @default(cuid())
+  name                 String
+  email                String                @unique
+  password             String
+  image                String?
+  role                 Role                  @default(USER)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  mutationApplications MutationApplication[]
+}
+
+model MutationApplication {
+  id                     String        @id @default(cuid())
+  applicantName          String
+  applicantEmail         String
+  applicantPhoneNo       String
+  applicantCitizenshipNo String
+  landDistrict           String
+  landCity               String
+  landWardNumber         String
+  landParcelNumber       String
+  landType               LandType
+  ownershipType          OwnershipType
+  previousOwnerName      String
+  reasonForMutation      String
+  dateOfTransfer         DateTime
+  applicationStatus      StatusType    @default(PENDING)
+  appliedById            String
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  appliedBy              User          @relation(fields: [appliedById], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum LandType {
+  Residential
+  Agricultural
+  Commercial
+  Other
+}
+
+enum OwnershipType {
+  Inherited
+  Purchased
+  Gifted
+  Other
+}
+
+enum StatusType {
+  PENDING
+  PROCESSING
+  APPROVED
+  REJECTED
+}
